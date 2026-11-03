@@ -1,5 +1,5 @@
-import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
+import Navbar from "../components/navbar.jsx";
+import Sidebar from "../components/Sidebar.jsx";
 
 function MainLayout({ children }) {
   return (

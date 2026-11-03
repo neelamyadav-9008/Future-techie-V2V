@@ -1,169 +1,259 @@
-import { useState } from "react";
-import MainLayout from "../layouts/MainLayout";
 
-import { FaMapMarkedAlt, FaLocationArrow } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  MapContainer,
+  TileLayer,
+  CircleMarker,
+  Polyline,
+  Popup,
+  useMap,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+
+const defaultCenter = [20.5937, 78.9629];
+
+function MapUpdater({ center }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (center) {
+      map.setView(center, 13);
+    }
+  }, [center, map]);
+
+  return null;
+}
 
 function SafeRoute() {
-  const [source, setSource] = useState("");
-  const [destination, setDestination] = useState("");
-  const [showSummary, setShowSummary] = useState(false);
+  const [start, setStart] = useState(null);
+  const [destination, setDestination] = useState(null);
+  const [destinationName, setDestinationName] = useState("");
+  const [route, setRoute] = useState([]);
+  const [distance, setDistance] = useState(null);
+  const [duration, setDuration] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleRoute = () => {
-    if (!source || !destination) {
-      alert("Please enter both locations.");
+  function getCurrentLocation() {
+    setError("");
+
+    if (!navigator.geolocation) {
+      setError("Your browser does not support location access.");
       return;
     }
 
-    setShowSummary(true);
-  };
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setStart([
+          position.coords.latitude,
+          position.coords.longitude,
+        ]);
+        setRoute([]);
+      },
+      () => {
+        setError("Please allow location access to find your starting point.");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+
+  async function findRoute(e) {
+    e.preventDefault();
+    setError("");
+    setRoute([]);
+    setDestination(null);
+
+    if (!start) {
+      setError("Please get your current location first.");
+      return;
+    }
+
+    if (!destinationName.trim()) {
+      setError("Please enter a destination.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const searchUrl =
+        "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" +
+        encodeURIComponent(destinationName);
+
+      const searchResponse = await fetch(searchUrl);
+      const searchResults = await searchResponse.json();
+
+      if (!searchResults.length) {
+        throw new Error("Destination not found. Try a more specific address.");
+      }
+
+      const place = searchResults[0];
+      const destinationPosition = [
+        Number(place.lat),
+        Number(place.lon),
+      ];
+
+      setDestination(destinationPosition);
+
+      const routeUrl =
+        `https://router.project-osrm.org/route/v1/driving/` +
+        `${start[1]},${start[0]};${destinationPosition[1]},${destinationPosition[0]}` +
+        "?overview=full&geometries=geojson";
+
+      const routeResponse = await fetch(routeUrl);
+      const routeData = await routeResponse.json();
+
+      if (routeData.code !== "Ok" || !routeData.routes?.length) {
+        throw new Error("No route could be found for this destination.");
+      }
+
+      const selectedRoute = routeData.routes[0];
+
+      const coordinates = selectedRoute.geometry.coordinates.map(
+        ([longitude, latitude]) => [latitude, longitude]
+      );
+
+      setRoute(coordinates);
+      setDistance((selectedRoute.distance / 1000).toFixed(1));
+      setDuration(Math.round(selectedRoute.duration / 60));
+    } catch (err) {
+      setError(err.message || "Could not calculate the route.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const mapCenter = destination || start || defaultCenter;
 
   return (
-    <MainLayout>
-      <div className="max-w-7xl mx-auto p-6">
+    <div className="min-h-screen bg-pink-50 p-4 sm:p-6">
+      <div className="max-w-6xl mx-auto">
+        <Link
+          to="/dashboard"
+          className="text-pink-700 font-semibold"
+        >
+          ← Back to Dashboard
+        </Link>
 
-        {/* Heading */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-pink-600 flex items-center gap-3">
-            <FaMapMarkedAlt />
-            AI Safe Route
-          </h1>
+        <h1 className="text-3xl font-bold text-pink-700 mt-5 mb-2">
+          Safe Route
+        </h1>
 
-          <p className="text-gray-600 mt-2">
-            Find the safest route instead of the shortest route.
-          </p>
+        <p className="text-gray-600 mb-5">
+          Find a route from your current location to your destination.
+        </p>
+
+        <div className="bg-white rounded-2xl shadow p-6 mb-6">
+          <button
+            type="button"
+            onClick={getCurrentLocation}
+            className="bg-pink-600 hover:bg-pink-700 text-white px-5 py-3 rounded-lg mb-5"
+          >
+            Use My Current Location
+          </button>
+
+          {start && (
+            <p className="text-green-700 mb-4">
+              Starting location detected.
+            </p>
+          )}
+
+          <form onSubmit={findRoute} className="space-y-4">
+            <label className="block font-semibold">
+              Destination
+            </label>
+
+            <input
+              value={destinationName}
+              onChange={(e) => setDestinationName(e.target.value)}
+              placeholder="Enter a place or address"
+              className="w-full border rounded-lg p-3"
+            />
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-5 py-3 rounded-lg"
+            >
+              {loading ? "Finding Route..." : "Find Route"}
+            </button>
+          </form>
+
+          {error && (
+            <p className="text-red-600 mt-4">{error}</p>
+          )}
+
+          {distance !== null && (
+            <div className="bg-green-50 rounded-xl p-4 mt-5">
+              <h2 className="font-bold text-green-800">
+                Route found
+              </h2>
+              <p>Distance: {distance} km</p>
+              <p>Estimated driving time: {duration} minutes</p>
+            </div>
+          )}
         </div>
 
-        {/* Search Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="h-[450px] rounded-xl overflow-hidden shadow-lg">
+          <MapContainer
+            center={mapCenter}
+            zoom={start ? 13 : 5}
+            className="h-full w-full"
+          >
+            <MapUpdater center={mapCenter} />
 
-          <div className="grid md:grid-cols-2 gap-6">
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
 
-            <div>
-
-              <label className="font-semibold block mb-2">
-                📍 Current Location
-              </label>
-
-              <input
-                type="text"
-                placeholder="Enter Current Location"
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
-                className="w-full border rounded-lg px-4 py-3 mb-5"
-              />
-
-              <label className="font-semibold block mb-2">
-                🎯 Destination
-              </label>
-
-              <input
-                type="text"
-                placeholder="Enter Destination"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="w-full border rounded-lg px-4 py-3"
-              />
-
-              <button
-                onClick={handleRoute}
-                className="mt-6 bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg flex items-center gap-2"
+            {start && (
+              <CircleMarker
+                center={start}
+                radius={9}
+                pathOptions={{
+                  color: "#2563eb",
+                  fillColor: "#3b82f6",
+                  fillOpacity: 1,
+                }}
               >
-                <FaLocationArrow />
-                Find Safest Route
-              </button>
+                <Popup>Your starting location</Popup>
+              </CircleMarker>
+            )}
 
-            </div>
+            {destination && (
+              <CircleMarker
+                center={destination}
+                radius={9}
+                pathOptions={{
+                  color: "#16a34a",
+                  fillColor: "#22c55e",
+                  fillOpacity: 1,
+                }}
+              >
+                <Popup>Your destination</Popup>
+              </CircleMarker>
+            )}
 
-            {/* Google Map */}
-
-            
-
-          </div>
-
+            {route.length > 0 && (
+              <Polyline
+                positions={route}
+                pathOptions={{
+                  color: "#9333ea",
+                  weight: 5,
+                }}
+              />
+            )}
+          </MapContainer>
         </div>
 
-        {showSummary && (
-
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            <div className="bg-green-100 rounded-xl p-6 shadow">
-
-              <h3 className="text-lg font-semibold">
-                Safety Score
-              </h3>
-
-              <p className="text-4xl font-bold text-green-700 mt-3">
-                92%
-              </p>
-
-            </div>
-
-            <div className="bg-blue-100 rounded-xl p-6 shadow">
-
-              <h3 className="text-lg font-semibold">
-                Estimated Time
-              </h3>
-
-              <p className="text-4xl font-bold text-blue-700 mt-3">
-                15 min
-              </p>
-
-            </div>
-
-            <div className="bg-purple-100 rounded-xl p-6 shadow">
-
-              <h3 className="text-lg font-semibold">
-                Distance
-              </h3>
-
-              <p className="text-4xl font-bold text-purple-700 mt-3">
-                4.2 km
-              </p>
-
-            </div>
-
-            <div className="bg-red-100 rounded-xl p-6 shadow">
-
-              <h3 className="text-lg font-semibold">
-                Nearby Police
-              </h3>
-
-              <p className="text-4xl font-bold text-red-600 mt-3">
-                2
-              </p>
-
-            </div>
-
-            <div className="bg-yellow-100 rounded-xl p-6 shadow">
-
-              <h3 className="text-lg font-semibold">
-                Nearby Hospitals
-              </h3>
-
-              <p className="text-4xl font-bold text-yellow-600 mt-3">
-                1
-              </p>
-
-            </div>
-
-            <div className="bg-green-50 rounded-xl p-6 shadow">
-
-              <h3 className="text-lg font-semibold">
-                Route Status
-              </h3>
-
-              <p className="text-2xl font-bold text-green-700 mt-3">
-                SAFE ✅
-              </p>
-
-            </div>
-
-          </div>
-
-        )}
-
+        <p className="text-sm text-gray-500 mt-4">
+          This prototype displays driving routes using OpenStreetMap
+          and OSRM. It does not yet assess real-time safety conditions.
+        </p>
       </div>
-    </MainLayout>
+    </div>
   );
 }
 
