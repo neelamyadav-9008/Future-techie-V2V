@@ -1,13 +1,20 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  FaArrowLeft,
+  FaUserShield,
+  FaPhoneAlt,
+  FaHeart,
+  FaPlusCircle,
+  FaTrash,
+  FaAddressBook,
+  FaShieldAlt,
+} from "react-icons/fa";
 
 function Profile() {
   const [contacts, setContacts] = useState(() => {
     try {
-      return JSON.parse(
-        localStorage.getItem("emergencyContacts") || "[]"
-      );
+      return JSON.parse(localStorage.getItem("emergencyContacts") || "[]");
     } catch {
       return [];
     }
@@ -30,10 +37,7 @@ function Profile() {
     const updatedContacts = [...contacts, newContact];
 
     setContacts(updatedContacts);
-    localStorage.setItem(
-      "emergencyContacts",
-      JSON.stringify(updatedContacts)
-    );
+    localStorage.setItem("emergencyContacts", JSON.stringify(updatedContacts));
 
     setName("");
     setPhone("");
@@ -46,34 +50,72 @@ function Profile() {
     );
 
     setContacts(updatedContacts);
-    localStorage.setItem(
-      "emergencyContacts",
-      JSON.stringify(updatedContacts)
-    );
+    localStorage.setItem("emergencyContacts", JSON.stringify(updatedContacts));
   }
 
   return (
-    <div className="min-h-screen bg-pink-50 p-6">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 px-5 py-8 sm:px-8 lg:px-12">
+      <div className="max-w-5xl mx-auto">
+
         <Link
           to="/dashboard"
-          className="text-pink-700 font-semibold"
+          className="inline-flex items-center gap-2 text-pink-700 hover:text-purple-700 font-semibold transition mb-8"
         >
-          ← Back to Dashboard
+          <FaArrowLeft />
+          Back to Dashboard
         </Link>
 
-        <div className="bg-white rounded-2xl shadow-lg p-6 mt-6">
-          <h1 className="text-3xl font-bold text-pink-700 mb-2">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="w-20 h-20 mx-auto mb-5 rounded-3xl bg-pink-100 flex items-center justify-center shadow-sm">
+            <FaUserShield className="text-4xl text-pink-600" />
+          </div>
+
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
             Emergency Contacts
           </h1>
 
-          <p className="text-gray-600 mb-6">
-            Add trusted people you can contact in an emergency.
+          <p className="text-gray-600 max-w-xl mx-auto leading-7">
+            Your safety circle matters. Add trusted people who can support
+            you whenever you need help.
           </p>
+        </div>
 
-          <form onSubmit={addContact} className="space-y-4">
+        {/* Information Card */}
+        <div className="bg-white/80 border border-pink-100 rounded-3xl p-6 sm:p-8 mb-10 shadow-sm flex items-start gap-4">
+          <div className="bg-purple-100 p-3 rounded-2xl shrink-0">
+            <FaHeart className="text-purple-600 text-xl" />
+          </div>
+          <div>
+            <h2 className="font-bold text-gray-800 text-lg mb-2">
+              Your trusted safety circle
+            </h2>
+            <p className="text-gray-600 leading-7">
+              Keep your family members and close friends saved here so
+              their contact details are easy to access.
+            </p>
+          </div>
+        </div>
+
+        {/* Add Contact Form */}
+        <div className="bg-white rounded-3xl shadow-md border border-pink-100 p-6 sm:p-10 mb-12">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="bg-pink-100 p-4 rounded-2xl">
+              <FaPlusCircle className="text-pink-600 text-2xl" />
+            </div>
             <div>
-              <label className="block font-medium mb-1">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Add a Trusted Contact
+              </h2>
+              <p className="text-gray-500 mt-1">
+                Enter the details of someone you trust.
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={addContact} className="space-y-7">
+            <div>
+              <label className="block text-gray-700 font-semibold mb-3">
                 Contact Name
               </label>
               <input
@@ -81,12 +123,12 @@ function Profile() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter full name"
                 required
-                className="w-full border rounded-lg p-3"
+                className="w-full border border-pink-200 bg-pink-50/40 rounded-xl px-5 py-4 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-400 transition"
               />
             </div>
 
             <div>
-              <label className="block font-medium mb-1">
+              <label className="block text-gray-700 font-semibold mb-3">
                 Phone Number
               </label>
               <input
@@ -96,73 +138,127 @@ function Profile() {
                 placeholder="Enter phone number"
                 required
                 pattern="[0-9+() -]{7,20}"
-                className="w-full border rounded-lg p-3"
+                className="w-full border border-pink-200 bg-pink-50/40 rounded-xl px-5 py-4 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-400 transition"
               />
             </div>
 
             <div>
-              <label className="block font-medium mb-1">
+              <label className="block text-gray-700 font-semibold mb-3">
                 Relationship
               </label>
               <input
                 value={relationship}
                 onChange={(e) => setRelationship(e.target.value)}
-                placeholder="e.g. Mother, Friend"
-                className="w-full border rounded-lg p-3"
+                placeholder="e.g. Mother, Father, Friend"
+                className="w-full border border-pink-200 bg-pink-50/40 rounded-xl px-5 py-4 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-400 transition"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-pink-600 hover:bg-pink-700 text-white font-semibold p-3 rounded-lg"
+              className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-semibold py-4 rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-3"
             >
+              <FaPlusCircle />
               Add Contact
             </button>
           </form>
         </div>
 
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Your Trusted Contacts ({contacts.length})
-          </h2>
+        {/* Contact List */}
+        <div className="mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-7">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800">
+                Your Trusted Contacts
+              </h2>
+              <p className="text-gray-500 mt-2">
+                People who are part of your safety circle.
+              </p>
+            </div>
+
+            <span className="bg-pink-100 text-pink-700 px-5 py-2 rounded-full font-semibold text-sm w-fit">
+              {contacts.length} Saved
+            </span>
+          </div>
 
           {contacts.length === 0 ? (
-            <p className="bg-white rounded-xl p-5 text-gray-500">
-              No contacts added yet.
-            </p>
+            <div className="bg-white rounded-3xl border border-pink-100 shadow-sm p-12 text-center">
+              <FaAddressBook className="text-5xl text-pink-300 mx-auto mb-5" />
+              <h3 className="text-xl font-bold text-gray-700 mb-3">
+                No contacts added yet
+              </h3>
+              <p className="text-gray-500 leading-7">
+                Add your first trusted contact using the form above.
+              </p>
+            </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {contacts.map((contact) => (
                 <div
                   key={contact.id}
-                  className="bg-white rounded-xl shadow-sm p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                  className="bg-white rounded-3xl border border-pink-100 shadow-sm hover:shadow-md transition p-7"
                 >
-                  <div>
-                    <h3 className="font-bold text-lg">
-                      {contact.name}
-                    </h3>
-                    <p className="text-gray-600">
-                      {contact.relationship || "Trusted contact"}
-                    </p>
-                    <a
-                      href={`tel:${contact.phone}`}
-                      className="text-pink-700 underline"
-                    >
-                      {contact.phone}
-                    </a>
+                  <div className="flex items-start justify-between gap-4 mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center shrink-0">
+                        <FaUserShield className="text-purple-600 text-xl" />
+                      </div>
+
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-800">
+                          {contact.name}
+                        </h3>
+                        <p className="text-sm text-purple-600 mt-1">
+                          {contact.relationship || "Trusted Contact"}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
-                  <button
-                    onClick={() => removeContact(contact.id)}
-                    className="bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded-lg"
-                  >
-                    Remove
-                  </button>
+                  <div className="bg-pink-50 rounded-xl p-4 mb-6 flex items-center gap-3">
+                    <FaPhoneAlt className="text-pink-600" />
+                    <span className="text-gray-700 font-medium break-all">
+                      {contact.phone}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <a
+                      href={`tel:${contact.phone}`}
+                      className="flex-1 bg-pink-500 hover:bg-pink-600 text-white text-center font-semibold py-3 rounded-xl transition"
+                    >
+                      Call Contact
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={() => removeContact(contact.id)}
+                      className="px-5 py-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 transition"
+                      aria-label={`Remove ${contact.name}`}
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* Safety Note */}
+        <div className="bg-purple-50 border border-purple-100 rounded-2xl p-6 flex items-start gap-4">
+          <FaShieldAlt className="text-purple-600 text-2xl shrink-0 mt-1" />
+          <div>
+            <h3 className="font-bold text-gray-800 mb-2">
+              A little safety reminder
+            </h3>
+            <p className="text-gray-600 text-sm leading-7">
+              Make sure the phone numbers are correct and your trusted
+              contacts know they have been added to your safety circle.
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   );
