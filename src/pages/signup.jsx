@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -44,104 +45,118 @@ function Signup() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 flex items-center justify-center px-5 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-blue-100 flex items-center justify-center px-4 py-10">
 
-      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 bg-white rounded-3xl shadow-xl overflow-hidden">
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 bg-white/90 backdrop-blur-xl rounded-[32px] shadow-[0_20px_70px_rgba(219,39,119,0.13)] overflow-hidden border border-white">
 
-        {/* Left Section */}
-        <div className="hidden md:flex flex-col justify-center items-center text-center p-12 bg-gradient-to-br from-pink-400 via-pink-300 to-purple-400 text-white">
+        {/* Left Branding Section */}
+        <div className="hidden md:flex flex-col justify-center items-center text-center px-10 lg:px-14 py-16 bg-gradient-to-br from-pink-400 via-pink-300 to-purple-400 text-white relative overflow-hidden">
 
-          <div className="w-24 h-24 rounded-3xl bg-white/25 flex items-center justify-center mb-8">
-            <FaShieldAlt className="text-5xl" />
-          </div>
+          <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-white/10" />
+          <div className="absolute -bottom-24 -right-20 w-72 h-72 rounded-full bg-white/10" />
 
-          <h1 className="text-4xl font-bold mb-5">
-            She Shield
-          </h1>
+          <div className="relative z-10">
 
-          <p className="text-lg leading-8 text-white/95 max-w-sm">
-            Your safety, your strength, your space. Join our community
-            and take a step towards a safer tomorrow.
-          </p>
+            <div className="w-24 h-24 rounded-[28px] bg-white/25 backdrop-blur-sm flex items-center justify-center mb-8 mx-auto shadow-lg">
+              <FaShieldAlt className="text-5xl" />
+            </div>
 
-          <div className="mt-10 flex items-center gap-3 text-white/90">
-            <FaHeart />
-            <span>Your safety matters.</span>
-          </div>
+            <h1 className="text-4xl lg:text-5xl font-extrabold mb-5">
+              SheShield
+            </h1>
 
-          <div className="mt-16 text-sm text-white/80">
-            Empowering women through technology
+            <p className="text-lg leading-8 text-white/95 max-w-sm mx-auto">
+              Your safety, your strength, your space. Join our community
+              and take a step towards a safer tomorrow.
+            </p>
+
+            <div className="mt-10 flex items-center justify-center gap-3 text-white/90 font-medium">
+              <FaHeart />
+              <span>Your safety matters.</span>
+            </div>
+
+            <div className="mt-20 text-sm text-white/80">
+              Empowering women through technology
+            </div>
+
           </div>
         </div>
 
-        {/* Right Section */}
-        <div className="p-7 sm:p-10 lg:p-12">
+        {/* Signup Form Section */}
+        <div className="p-7 sm:p-10 lg:p-14">
 
-          <div className="text-center mb-10">
-            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-pink-100 flex items-center justify-center">
+          <div className="text-center mb-9">
+
+            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center shadow-sm">
               <FaUserPlus className="text-3xl text-pink-600" />
             </div>
 
-            <h2 className="text-3xl font-bold text-gray-800">
+            <p className="text-pink-500 text-xs font-bold uppercase tracking-[3px] mb-3">
+              Join Our Community
+            </p>
+
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-800">
               Create Account
             </h2>
 
-            <p className="text-gray-500 mt-3">
-              Join She Shield and become part of our community.
+            <p className="text-gray-500 mt-3 text-sm sm:text-base">
+              Create your SheShield account and stay connected.
             </p>
+
           </div>
 
-          <form onSubmit={handleSignup} className="space-y-7">
+          <form onSubmit={handleSignup} className="space-y-6">
 
-            {/* Name */}
+            {/* Full Name */}
             <div>
-              <label className="block text-gray-700 font-semibold mb-3">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Full Name
               </label>
 
               <div className="relative">
-                <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-500" />
+                <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-400" />
 
                 <input
+                  type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your name"
+                  placeholder="Enter your full name"
                   required
                   autoComplete="name"
-                  className="w-full border border-pink-200 bg-pink-50/40 rounded-xl pl-12 pr-4 py-4 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-400 transition"
+                  className="w-full bg-pink-50/50 border border-pink-100 rounded-2xl pl-12 pr-4 py-4 text-gray-700 placeholder-gray-400 outline-none transition-all focus:border-pink-400 focus:ring-4 focus:ring-pink-100 hover:border-pink-200"
                 />
               </div>
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-gray-700 font-semibold mb-3">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Email Address
               </label>
 
               <div className="relative">
-                <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-500" />
+                <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-400" />
 
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder="Enter your email address"
                   required
                   autoComplete="email"
-                  className="w-full border border-pink-200 bg-pink-50/40 rounded-xl pl-12 pr-4 py-4 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-400 transition"
+                  className="w-full bg-pink-50/50 border border-pink-100 rounded-2xl pl-12 pr-4 py-4 text-gray-700 placeholder-gray-400 outline-none transition-all focus:border-pink-400 focus:ring-4 focus:ring-pink-100 hover:border-pink-200"
                 />
               </div>
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-gray-700 font-semibold mb-3">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Password
               </label>
 
               <div className="relative">
-                <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-500" />
+                <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-400" />
 
                 <input
                   type="password"
@@ -151,48 +166,54 @@ function Signup() {
                   required
                   minLength={6}
                   autoComplete="new-password"
-                  className="w-full border border-pink-200 bg-pink-50/40 rounded-xl pl-12 pr-4 py-4 outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-400 transition"
+                  className="w-full bg-pink-50/50 border border-pink-100 rounded-2xl pl-12 pr-4 py-4 text-gray-700 placeholder-gray-400 outline-none transition-all focus:border-pink-400 focus:ring-4 focus:ring-pink-100 hover:border-pink-200"
                 />
               </div>
 
-              <p className="text-xs text-gray-400 mt-2">
+              <p className="text-xs text-gray-400 mt-2 ml-1">
                 Password must contain at least 6 characters.
               </p>
             </div>
 
-            {/* Error */}
+            {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-red-600 text-sm flex items-start gap-3">
+              <div className="bg-red-50 border border-red-100 rounded-2xl p-4 text-red-600 text-sm flex items-start gap-3">
                 <FaExclamationCircle className="mt-1 shrink-0" />
                 <p>{error}</p>
               </div>
             )}
 
-            {/* Submit */}
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 disabled:opacity-50 text-white font-semibold py-4 rounded-xl shadow-md hover:shadow-lg transition"
+              className="w-full bg-gradient-to-r from-pink-500 via-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 disabled:opacity-50 text-white font-bold py-4 rounded-2xl shadow-lg shadow-pink-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
             >
-              {loading ? "Creating Account..." : "Create My Account"}
+              {loading ? "Creating Account..." : "Create My Account →"}
             </button>
 
           </form>
 
           {/* Login Link */}
-          <p className="text-center mt-9 text-gray-600">
-            Already registered?{" "}
-            <Link
-              to="/"
-              className="text-pink-600 font-bold hover:text-purple-600 transition"
-            >
-              Login
-            </Link>
-          </p>
+          <div className="text-center mt-8">
+            <p className="text-sm text-gray-500">
+              Already have an account?{" "}
+              <Link
+                to="/"
+                className="text-pink-600 font-bold hover:text-purple-600 transition-colors"
+              >
+                Login
+              </Link>
+            </p>
+          </div>
 
-          <p className="text-center text-xs text-gray-400 mt-8">
-            Made with <span className="text-pink-500">♥</span> for a safer tomorrow.
-          </p>
+          {/* Footer */}
+          <div className="mt-9 pt-6 border-t border-pink-100 text-center">
+            <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+              <FaHeart className="text-pink-400" />
+              Made with love for a safer tomorrow.
+            </div>
+          </div>
 
         </div>
       </div>
